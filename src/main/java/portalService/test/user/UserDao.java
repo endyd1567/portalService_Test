@@ -27,4 +27,21 @@ public class UserDao {
 
         return user;
     }
+
+    public void insert(User user) throws SQLException {
+        Connection con = DriverManager.getConnection(URL_JEJU, USERNAME_JEJU, PASSWORD_JEJU);
+        PreparedStatement psmt = con.prepareStatement("insert into userinfo(name,password) values(?,?) " , Statement.RETURN_GENERATED_KEYS);
+        psmt.setString(1, user.getName());
+        psmt.setString(2,user.getPassword());
+        psmt.executeUpdate();
+
+        ResultSet rs = psmt.getGeneratedKeys();
+        rs.next();
+        user.setId(rs.getLong(1));
+
+        rs.close();
+        psmt.close();
+        con.close();
+
+    }
 }
