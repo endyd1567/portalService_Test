@@ -1,7 +1,11 @@
 package portalService.test.user;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import portalService.test.connection.HallaConnectionMaker;
 import portalService.test.connection.JejuConnectionMaker;
 
@@ -11,14 +15,22 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserDaoTest {
+
+    private static UserDao userDao;
+
+    @BeforeAll
+    public static void setUp() {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(DaoFactory.class);
+        userDao = applicationContext.getBean("userDao", UserDao.class);
+    }
+
     @Test
     public void get() throws SQLException {
         Long id = 1l;
         String name = "umdu";
         String password = "1234";
 
-        DaoFactory daoFactory = new DaoFactory();
-        UserDao userDao = daoFactory.getUserDao();
+
         User user = userDao.findById(id);
 
         assertThat(user.getId()).isEqualTo(1l);
@@ -32,8 +44,7 @@ class UserDaoTest {
         user.setName("hulk");
         user.setPassword("1234");
 
-        DaoFactory daoFactory = new DaoFactory();
-        UserDao userDao = daoFactory.getUserDao();
+
         userDao.insert(user);
 
         assertThat(user.getId()).isGreaterThan(1l);
