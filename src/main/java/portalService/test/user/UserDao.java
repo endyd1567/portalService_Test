@@ -7,10 +7,10 @@ import java.sql.*;
 
 import static portalService.test.connection.ConnectionConst.*;
 
-public class UserDao {
+public abstract class UserDao {
 
     public User findById(Long id) throws SQLException {
-        Connection con = DriverManager.getConnection(URL_JEJU, USERNAME_JEJU, PASSWORD_JEJU);
+        Connection con = getConnection();
         PreparedStatement psmt = con.prepareStatement("select id,name,password from userinfo where id = ?");
         psmt.setLong(1,id);
         ResultSet rs = psmt.executeQuery();
@@ -29,7 +29,7 @@ public class UserDao {
     }
 
     public void insert(User user) throws SQLException {
-        Connection con = DriverManager.getConnection(URL_JEJU, USERNAME_JEJU, PASSWORD_JEJU);
+        Connection con = getConnection();
         PreparedStatement psmt = con.prepareStatement("insert into userinfo(name,password) values(?,?) " , Statement.RETURN_GENERATED_KEYS);
         psmt.setString(1, user.getName());
         psmt.setString(2,user.getPassword());
@@ -44,4 +44,8 @@ public class UserDao {
         con.close();
 
     }
+
+    abstract public Connection getConnection() throws SQLException;
+
+
 }
