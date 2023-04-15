@@ -2,15 +2,22 @@ package portalService.test.user;
 
 
 import portalService.test.connection.ConnectionConst;
+import portalService.test.connection.ConnectionMaker;
 
 import java.sql.*;
 
 import static portalService.test.connection.ConnectionConst.*;
 
-public abstract class UserDao {
+public class UserDao {
+
+    private final ConnectionMaker connectionMaker;
+
+    public UserDao(ConnectionMaker connectionMaker) {
+        this.connectionMaker = connectionMaker;
+    }
 
     public User findById(Long id) throws SQLException {
-        Connection con = getConnection();
+        Connection con = connectionMaker.getConnection();
         PreparedStatement psmt = con.prepareStatement("select id,name,password from userinfo where id = ?");
         psmt.setLong(1,id);
         ResultSet rs = psmt.executeQuery();
@@ -29,7 +36,7 @@ public abstract class UserDao {
     }
 
     public void insert(User user) throws SQLException {
-        Connection con = getConnection();
+        Connection con = connectionMaker.getConnection();
         PreparedStatement psmt = con.prepareStatement("insert into userinfo(name,password) values(?,?) " , Statement.RETURN_GENERATED_KEYS);
         psmt.setString(1, user.getName());
         psmt.setString(2,user.getPassword());
@@ -44,8 +51,4 @@ public abstract class UserDao {
         con.close();
 
     }
-
-    abstract public Connection getConnection() throws SQLException;
-
-
 }
