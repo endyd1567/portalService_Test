@@ -3,6 +3,9 @@ package portalService.test.user;
 
 import portalService.test.connection.ConnectionConst;
 import portalService.test.connection.ConnectionMaker;
+import portalService.test.strategy.DeleteStatementStrategy;
+import portalService.test.strategy.StatementStrategy;
+import portalService.test.strategy.UpdateStatementStrategy;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -94,52 +97,34 @@ public class UserDao {
         }
 
     public void update(User user) throws SQLException {
+        StatementStrategy statementStrategy = new UpdateStatementStrategy(user);
+        jdbcContextForUpdate(statementStrategy);
 
-        Connection con = null;
-        PreparedStatement psmt = null;
 
-        try {
-            con = dataSource.getConnection();
-            psmt = con.prepareStatement("update userinfo set name=? , password=? where id=? ");
-            psmt.setString(1,user.getName());
-            psmt.setString(2,user.getPassword());
-            psmt.setLong(3,user.getId());
-            psmt.executeUpdate();
-
-        } finally {
-            try {
-                psmt.close();
-            } catch (SQLException e){
-                e.printStackTrace();
-            }
-            try {
-                con.close();
-            } catch (SQLException e){
-                e.printStackTrace();
-            }
-        }
     }
 
     public void delete(Long id) throws SQLException {
+        StatementStrategy statementStrategy = new DeleteStatementStrategy(id);
+        jdbcContextForUpdate(statementStrategy);
+    }
 
+    private void jdbcContextForUpdate(StatementStrategy statementStrategy) throws SQLException {
         Connection con = null;
         PreparedStatement psmt = null;
 
         try {
-            con = dataSource.getConnection();
-            psmt = con.prepareStatement("delete from userinfo where id=? ");
-            psmt.setLong(1,id);
+             con = dataSource.getConnection();
+            psmt = statementStrategy.makeStatement(con);
             psmt.executeUpdate();
-
         } finally {
             try {
                 psmt.close();
-            } catch (SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
             try {
                 con.close();
-            } catch (SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
