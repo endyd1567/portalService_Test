@@ -33,7 +33,7 @@ public class UserDao {
 
     public void update(User user) throws SQLException {
         String sql = "update userinfo set name=? , password=? where id=? ";
-        Object[] params = new Object[]{user.getName(), user.getPassword()};
+        Object[] params = new Object[]{user.getName(), user.getPassword(), user.getId()};
         jdbcContext.update(sql,params);
     }
 
