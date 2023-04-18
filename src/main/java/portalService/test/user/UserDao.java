@@ -19,44 +19,28 @@ public class UserDao {
     }
 
     public User findById(Long id) throws SQLException {
-        StatementStrategy statementStrategy = con -> {
-            PreparedStatement psmt = con.prepareStatement("select id,name,password from userinfo where id = ?");
-            psmt.setLong(1, id);
-            return psmt;
-        };
-        return jdbcContext.jdbcContextForFind(statementStrategy);
+        String sql = "select id,name,password from userinfo where id=? ";
+        Object[] params = new Object[]{id};
+        return jdbcContext.find(sql,params);
     }
 
 
     public void insert(User user) throws SQLException {
-        StatementStrategy statementStrategy = con -> {
-            PreparedStatement psmt = con.prepareStatement("insert into userinfo(name,password) values(?,?)"
-            ,Statement.RETURN_GENERATED_KEYS);
-            psmt.setString(1, user.getName());
-            psmt.setString(2, user.getPassword());
-            return psmt;
-        };
-        jdbcContext.jdbcContextForInsert(user,statementStrategy);
+        String sql = "insert into userinfo(name,password) values(?,?)";
+        Object[] params = new Object[]{user.getName() , user.getPassword()};
+        jdbcContext.insert(user,sql,params);
     }
 
     public void update(User user) throws SQLException {
-        StatementStrategy statementStrategy = con -> {
-            PreparedStatement psmt = con.prepareStatement("update userinfo set name=? , password=? where id=? ");
-            psmt.setString(1, user.getName());
-            psmt.setString(2, user.getPassword());
-            psmt.setLong(3,user.getId());
-            return psmt;
-        };
-        jdbcContext.jdbcContextForUpdate(statementStrategy);
+        String sql = "update userinfo set name=? , password=? where id=? ";
+        Object[] params = new Object[]{user.getName(), user.getPassword()};
+        jdbcContext.update(sql,params);
     }
 
     public void delete(Long id) throws SQLException {
-        StatementStrategy statementStrategy = con -> {
-            PreparedStatement psmt = con.prepareStatement("delete from userinfo where id = ?");
-            psmt.setLong(1, id);
-            return psmt;
-        };
-        jdbcContext.jdbcContextForUpdate(statementStrategy);
+        String sql = "delete from userinfo where id=? ";
+        Object[] params = new Object[]{id};
+        jdbcContext.update(sql,params);
     }
 }
 
